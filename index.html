@@ -87,6 +87,16 @@
             margin-right: 10px;
         }
 
+        .task .overdue {
+            border-left: 4px solid #dc3545;
+            background: #fff5f5;
+        }
+
+        .task small {
+            color: #666;
+            font-size: 12px;
+        }
+
         .task button {
             background: #dc3545;
             color: white;
@@ -116,6 +126,7 @@
         
         <div class="add-task">
             <input type="text" id="taskInput" placeholder="Enter a new task">
+            <input type="date" id="dueDateInput">
             <button id="addButton">Add Task</button>
         </div>
 
@@ -138,17 +149,26 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let tasks = [
-                { id: 1, title: 'Learn Git Basics', status: 'todo' },
-                { id: 2, title: 'Create First PR', status: 'in-progress' },
-                { id: 3, title: 'Review Code', status: 'done' },
-                { id: 4, title: 'Prisca', status: 'done' }
+                { id: 1, title: 'Learn Git Basics', status: 'todo', dueDate: '2026-02-01' },
+                { id: 2, title: 'Create First PR', status: 'in-progress', dueDate: '2026-02-05' },
+                { id: 3, title: 'Review Code', status: 'done', dueDate: '2026-02-10' },
+                { id: 4, title: 'Prisca', status: 'done', dueDate: '2026-03-15' }
             ];
 
             function createTaskElement(task) {
                 const taskDiv = document.createElement('div');
                 taskDiv.className = 'task';
+
+                const today = new Date().toISOString().split('T')[0];
+                const isOverdue = task.dueDate && task.dueDate < today && task.status !== 'done'; 
+                
+                if (isOverdue) {
+                    taskDiv.classList.add('overdue');
+                }
+
                 taskDiv.innerHTML = `
-                    <span>${task.title}</span>
+                    <span>${task.title}</span><br>
+                    ${task.dueDate ? `<small>Due: ${task.dueDate}</small>` : ''}
                     <div>
                         <select onchange="moveTask(${task.id}, this.value)">
                             <option value="todo" ${task.status === 'todo' ? 'selected' : ''}>To Do</option>
@@ -189,16 +209,20 @@
             // Add task event listener
             document.getElementById('addButton').addEventListener('click', function() {
                 const input = document.getElementById('taskInput');
+                const dueDateInput = document.getElementById('dueDateInput');
                 const title = input.value.trim();
+                const dueDate = dueDateInput.value;
                 
                 if (title) {
                     const newTask = {
                         id: tasks.length + 1,
                         title: title,
-                        status: 'todo'
+                        status: 'todo',
+                        dueDate
                     };
                     tasks.push(newTask);
                     input.value = '';
+                    dueDateInput.value = '';
                     renderTasks();
                 }
             });
