@@ -144,17 +144,32 @@
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         let tasks = [
-          { id: 1, title: "Learn Git Basics", status: "todo" },
-          { id: 2, title: "Create First PR", status: "in-progress" },
-          { id: 3, title: "Review Code", status: "done" },
-          { id: 4, title: "Victor Okoukoni", status: "todo" },
+          {
+            id: 1,
+            title: "Learn Git Basics",
+            status: "todo",
+            priority: "High",
+          },
+          {
+            id: 2,
+            title: "Create First PR",
+            status: "in-progress",
+            priority: "Medium",
+          },
+          { id: 3, title: "Review Code", status: "done", priority: "Low" },
+          { id: 4, title: "Victor Okoukoni", status: "todo", priority: "High" },
         ];
 
         function createTaskElement(task) {
           const taskDiv = document.createElement("div");
           taskDiv.className = "task";
           taskDiv.innerHTML = `
-                    <span>${task.title}</span>
+                    <span>
+                        ${task.title}
+                        <small style="display:block; font-size:12px; color:#666;">
+                            Priority: ${task.priority}
+                        </small>
+                    </span>
                     <div>
                         <select onchange="moveTask(${task.id}, this.value)">
                             <option value="todo" ${task.status === "todo" ? "selected" : ""}>To Do</option>
