@@ -72,7 +72,7 @@
         }
 
         .task {
-            background: white;
+        
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 4px;
@@ -81,6 +81,22 @@
             justify-content: space-between;
             align-items: center;
         }
+
+
+
+      .task.todo {
+      background: #e0e0e0;
+       }
+
+      .task.in-progress {
+      background: #bbdefb;
+       }
+
+      .task.done {
+      background: #c8e6c9;
+      }
+
+
 
         .task select {
             padding: 4px;
@@ -146,7 +162,7 @@
 
             function createTaskElement(task) {
                 const taskDiv = document.createElement('div');
-                taskDiv.className = 'task';
+                taskDiv.className = `task ${task.status}`;
                 taskDiv.innerHTML = `
                     <span>${task.title}</span>
                     <div>
