@@ -40,6 +40,12 @@
             border-radius: 4px;
         }
 
+        .add-task select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
         .add-task button {
             padding: 8px 16px;
             background: #007bff;
@@ -80,6 +86,61 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-left: 4px solid #ddd;
+        }
+
+        .task.priority-high {
+            border-left-color: #dc3545;
+            background: #fff5f5;
+        }
+
+        .task.priority-medium {
+            border-left-color: #ffc107;
+            background: #fffbf0;
+        }
+
+        .task.priority-low {
+            border-left-color: #28a745;
+            background: #f8fff8;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-title {
+            font-weight: 500;
+        }
+
+        .task-priority {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-left: 8px;
+        }
+
+        .task-priority.high {
+            background: #dc3545;
+            color: white;
+        }
+
+        .task-priority.medium {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .task-priority.low {
+            background: #28a745;
+            color: white;
+        }
+
+        .task-controls {
+            display: flex;
+            gap: 5px;
+            align-items: center;
         }
 
         .task select {
@@ -116,6 +177,11 @@
         
         <div class="add-task">
             <input type="text" id="taskInput" placeholder="Enter a new task">
+            <select id="prioritySelect">
+                <option value="medium">Medium Priority</option>
+                <option value="high">High Priority</option>
+                <option value="low">Low Priority</option>
+            </select>
             <button id="addButton">Add Task</button>
         </div>
 
@@ -138,18 +204,27 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let tasks = [
-                { id: 1, title: 'Learn Git Basics', status: 'todo' },
-                { id: 2, title: 'Create First PR', status: 'in-progress' },
-                { id: 3, title: 'Review Code', status: 'done' },
-                { id: 4, title: 'Sophia', status: 'done' }
+                { id: 1, title: 'Learn Git Basics', status: 'todo', priority: 'high' },
+                { id: 2, title: 'Create First PR', status: 'in-progress', priority: 'medium' },
+                { id: 3, title: 'Review Code', status: 'done', priority: 'low' },
+                { id: 4, title: 'Sophia', status: 'done', priority: 'medium' },
+                { id: 5, title: 'Kelvin', status: 'done', priority: 'low' },
             ];
 
             function createTaskElement(task) {
                 const taskDiv = document.createElement('div');
-                taskDiv.className = 'task';
+                taskDiv.className = `task priority-${task.priority}`;
                 taskDiv.innerHTML = `
-                    <span>${task.title}</span>
-                    <div>
+                    <div class="task-content">
+                        <span class="task-title">${task.title}</span>
+                        <span class="task-priority ${task.priority}">${task.priority}</span>
+                    </div>
+                    <div class="task-controls">
+                        <select onchange="changePriority(${task.id}, this.value)">
+                            <option value="high" ${task.priority === 'high' ? 'selected' : ''}>High</option>
+                            <option value="medium" ${task.priority === 'medium' ? 'selected' : ''}>Medium</option>
+                            <option value="low" ${task.priority === 'low' ? 'selected' : ''}>Low</option>
+                        </select>
                         <select onchange="moveTask(${task.id}, this.value)">
                             <option value="todo" ${task.status === 'todo' ? 'selected' : ''}>To Do</option>
                             <option value="in-progress" ${task.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
@@ -181,6 +256,14 @@
                 }
             };
 
+            window.changePriority = function(taskId, newPriority) {
+                const task = tasks.find(t => t.id === taskId);
+                if (task) {
+                    task.priority = newPriority;
+                    renderTasks();
+                }
+            };
+
             window.deleteTask = function(taskId) {
                 tasks = tasks.filter(task => task.id !== taskId);
                 renderTasks();
@@ -189,16 +272,19 @@
             // Add task event listener
             document.getElementById('addButton').addEventListener('click', function() {
                 const input = document.getElementById('taskInput');
+                const prioritySelect = document.getElementById('prioritySelect');
                 const title = input.value.trim();
                 
                 if (title) {
                     const newTask = {
                         id: tasks.length + 1,
                         title: title,
-                        status: 'todo'
+                        status: 'todo',
+                        priority: prioritySelect.value
                     };
                     tasks.push(newTask);
                     input.value = '';
+                    prioritySelect.value = 'medium';
                     renderTasks();
                 }
             });
